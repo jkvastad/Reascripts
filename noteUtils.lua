@@ -23,7 +23,7 @@ local function notesInTake(take)
   
     for i = 0, noteCount - 1 do
       local retval, selected, muted, startppqpos, endppqpos, chan, pitch, vel = reaper.MIDI_GetNote( take, i )
-      storeNote(notes, i, selected, muted, startppqpos, endppqpos, chan, pitch, vel)
+      storeNote(notes, i+1, selected, muted, startppqpos, endppqpos, chan, pitch, vel) -- lua uses 1 indexing
     end
   return notes
 end
@@ -91,10 +91,21 @@ local function getMIDIForFOH(fundamental, octave, harmonic)
 end
 
 
+local function updateMIDIPitches(newMIDIPitches,notes)
+  if #newMIDIPitches ~= #notes then
+    reaper.ReaScriptError("!Number of pitches does not match number of notes!")
+  end
+  for k in pairs(notes) do
+    notes[k].pitch = newMIDIPitches[k]
+  end
+end
+
+
 noteUtils = {
 notesInTake = notesInTake,
 notesInSelectedItem = notesInSelectedItem,
 newMIDIFromNotes = newMIDIFromNotes,
 getLengthFromTakeSource = getLengthFromTakeSource,
-getMIDIForFOH = getMIDIForFOH
+getMIDIForFOH = getMIDIForFOH,
+updateMIDIPitches = updateMIDIPitches
 }
