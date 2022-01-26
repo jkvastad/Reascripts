@@ -61,43 +61,47 @@ local function newMIDIFromNotes(track, position, notes)
 end
 
 
-local TWELVE_TET = {"A","A#","B","C","C#","D","D#","E","F","F#","G","G#"}
+local TWELVE_TET = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"} -- start at C as scientific pitch notation increments octaves at C
 local NOTE_AS_MIDI = {}
 for i,note in pairs(TWELVE_TET) do
-  NOTE_AS_MIDI[note] = i+20 -- A0 is MIDI value 21
+  NOTE_AS_MIDI[note] = i+11 -- C0 is MIDI value 12
 end
 local HARMONIC_AS_MIDI = {0,12,19,24,28,31,34,36,38,39} -- First 10 harmonics
 
-local function toMIDI(note,octave,harmonic)
+local function toMIDIPitch(note,octave,harmonic)
   return NOTE_AS_MIDI[note] + octave*12 + HARMONIC_AS_MIDI[harmonic]
-end
-
-local FUNDAMENTAL_OCTAVE_HARMONIC = {}
-for _,note in pairs(TWELVE_TET) do 
-  local octaves = {}
-  for octave=0,9 do
-    local harmonics = {}
-    for harmonic=1,10 do
-      harmonics[harmonic] = toMIDI(note,octave,harmonic)
-    end
-    octaves[octave] = harmonics
-  end
-  FUNDAMENTAL_OCTAVE_HARMONIC[note] = octaves
-end
-
--- E.g. getMIDIForFOH("A#",3,5)
-local function getMIDIForFOH(fundamental, octave, harmonic)
-  return FUNDAMENTAL_OCTAVE_HARMONIC[fundamental][octave][harmonic]
 end
 
 
 local function updateMIDIPitches(newMIDIPitches,notes)
   if #newMIDIPitches ~= #notes then
-    reaper.ReaScriptError("!Number of pitches does not match number of notes!")
+    reaper.ReaScriptError("!Number of pitches (" .. #newMIDIPitches .. ") does not match number of notes (" .. #notes .. ")\n")
   end
   for k in pairs(notes) do
     notes[k].pitch = newMIDIPitches[k]
   end
+end
+
+
+local function harmonicsToMIDI(harmonics)
+  local harmonicsPattern = [[^(%u?#?)(%d)]]
+  currentFundamental = "Z"
+  currentOctave = 0
+  newMIDIPitches = {}
+  i = 0
+  while true do
+    i,j,note,number = string.find(harmonics,harmonicsPattern, i+1)
+    if i == nil then break end
+    if #note ~= 0 then
+      i = j
+      currentFundamental = note
+      currentOctave = tonumber(number)
+      goto continue
+    end
+    table.insert(newMIDIPitches,toMIDIPitch(currentFundamental,currentOctave - 2,tonumber(number))) -- primarily harmonics 456789 are used so offset with 2 octaves
+    ::continue::
+  end
+  return newMIDIPitches
 end
 
 
@@ -106,6 +110,7 @@ notesInTake = notesInTake,
 notesInSelectedItem = notesInSelectedItem,
 newMIDIFromNotes = newMIDIFromNotes,
 getLengthFromTakeSource = getLengthFromTakeSource,
-getMIDIForFOH = getMIDIForFOH,
-updateMIDIPitches = updateMIDIPitches
+updateMIDIPitches = updateMIDIPitches,
+harmonicsToMIDI = harmonicsToMIDI,
+toMIDIPitch = toMIDIPitch
 }
