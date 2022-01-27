@@ -83,34 +83,11 @@ local function updateMIDIPitches(newMIDIPitches,notes)
 end
 
 
-local function harmonicsToMIDI(harmonics)
-  local harmonicsPattern = [[^(%u?#?)(%d)]]
-  currentFundamental = "Z"
-  currentOctave = 0
-  newMIDIPitches = {}
-  i = 0
-  while true do
-    i,j,note,number = string.find(harmonics,harmonicsPattern, i+1)
-    if i == nil then break end
-    if #note ~= 0 then
-      i = j
-      currentFundamental = note
-      currentOctave = tonumber(number)
-      goto continue
-    end
-    table.insert(newMIDIPitches,toMIDIPitch(currentFundamental,currentOctave - 2,tonumber(number))) -- primarily harmonics 456789 are used so offset with 2 octaves
-    ::continue::
-  end
-  return newMIDIPitches
-end
-
-
 noteUtils = {
 notesInTake = notesInTake,
 notesInSelectedItem = notesInSelectedItem,
 newMIDIFromNotes = newMIDIFromNotes,
 getLengthFromTakeSource = getLengthFromTakeSource,
 updateMIDIPitches = updateMIDIPitches,
-harmonicsToMIDI = harmonicsToMIDI,
 toMIDIPitch = toMIDIPitch
 }
