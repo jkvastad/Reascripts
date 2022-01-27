@@ -80,12 +80,15 @@ local function notesCollectionFromHarmonicsCollection(notes,harmonicsCollection)
 end
 
 
-local function multipleNewMIDIsFromNotesCollection(track, position, notesCollection)
+local function newMIDIsFromNotesCollection(track, position, notesCollection)
   local currentPosition = position
+  local newMIDIs = {}
   for _, notes in pairs(notesCollection) do
     local newMIDI = noteUtils.newMIDIFromNotes(track, currentPosition, notes)
+    table.insert(newMIDIs,newMIDI)
     currentPosition = currentPosition + reaper.GetMediaItemInfo_Value(newMIDI, "D_LENGTH")
   end
+  return newMIDIs
 end
 
 
@@ -122,6 +125,6 @@ harmonicsToMIDIPitches = harmonicsToMIDIPitches,
 newHarmonicsFromPattern = newHarmonicsFromPattern,
 newHarmonicsCollection = newHarmonicsCollection,
 notesCollectionFromHarmonicsCollection = notesCollectionFromHarmonicsCollection,
-multipleNewMIDIsFromNotesCollection = multipleNewMIDIsFromNotesCollection,
+newMIDIsFromNotesCollection = newMIDIsFromNotesCollection,
 allSimplePermutedFundamentals = allSimplePermutedFundamentals
 }

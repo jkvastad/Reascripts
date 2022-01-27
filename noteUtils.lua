@@ -83,6 +83,21 @@ local function updateMIDIPitches(newMIDIPitches,notes)
 end
 
 
+local function transposeMIDIToOctave(MIDIItem, note, octave)
+  local newCentralPitch = toMIDIPitch(note,octave,1)
+  local currentTake = reaper.GetTake(MIDIItem,0)
+  local _, numberOfNotes = reaper.MIDI_CountEvts(currentTake)
+  for i = 0, numberOfNotes do
+    local _, _, _, _, _, _, notePitch = reaper.MIDI_GetNote(currentTake, i)
+    local newNotePitch = notePitch
+    while newNotePitch < newCentralPitch - 6 do newNotePitch = newNotePitch + 12 end
+    while newNotePitch > newCentralPitch + 6 do newNotePitch = newNotePitch - 12 end
+    reaper.MIDI_SetNote(currentTake, i, nil, nil, nil, nil, nil, newNotePitch, nil, nil)
+    reaper.MIDI_Sort(currentTake)
+  end
+end 
+
+
 noteUtils = {
 --functions
 notesInTake = notesInTake,
@@ -91,6 +106,7 @@ newMIDIFromNotes = newMIDIFromNotes,
 getLengthFromTakeSource = getLengthFromTakeSource,
 updateMIDIPitches = updateMIDIPitches,
 toMIDIPitch = toMIDIPitch,
+transposeMIDIToOctave = transposeMIDIToOctave,
 --constants
 TWELVE_TET = TWELVE_TET
 }
