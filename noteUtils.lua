@@ -84,10 +84,13 @@ end
 
 
 noteUtils = {
+--functions
 notesInTake = notesInTake,
 notesInSelectedItem = notesInSelectedItem,
 newMIDIFromNotes = newMIDIFromNotes,
 getLengthFromTakeSource = getLengthFromTakeSource,
 updateMIDIPitches = updateMIDIPitches,
-toMIDIPitch = toMIDIPitch
+toMIDIPitch = toMIDIPitch,
+--constants
+TWELVE_TET = TWELVE_TET
 }

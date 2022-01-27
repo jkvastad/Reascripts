@@ -52,7 +52,7 @@ local function newHarmonicsCollection(harmonicsPattern, fundamentalsCollection, 
     reaper.ReaScriptError("!Number of fundamentalsCollection (" .. #fundamentalsCollection .. ") does not match number of octavesCollection (" .. #octavesCollection .. ")\n")
   end
   
-  harmonicsCollection = {}
+  local harmonicsCollection = {}
   for i in pairs(fundamentalsCollection) do
     table.insert(harmonicsCollection,newHarmonicsFromPattern(harmonicsPattern,fundamentalsCollection[i], octavesCollection[i]))
   end
@@ -90,10 +90,39 @@ local function multipleNewMIDIsFromNotesCollection(track, position, notesCollect
 end
 
 
+-- local fundamentalsCollection, octavesCollection = harmonicUtils.allSimplePermutedFundamentals({"C","X","C"}, 3)
+-- returns collections of the type {"C","C","C"}, {3,3,3}, {"C","C#","C"}, {3,3,3}, etc.
+local function allSimplePermutedFundamentals(fundamentals, octave)    
+  local index = 0
+  for k,v in pairs(fundamentals) do
+    if v == "X" then index = k break end
+  end
+  
+  local fundamentalsCollection = {}
+  for _, fundamental in pairs(noteUtils.TWELVE_TET) do
+    local newFundamentals = {table.unpack(fundamentals)}
+    newFundamentals[index] = fundamental
+    table.insert(fundamentalsCollection,newFundamentals)
+  end    
+  
+  local octavesCollection = {}
+  for i = 1, #noteUtils.TWELVE_TET do
+    local octaves = {}
+    for k = 1, #fundamentals do 
+     octaves[k] = octave
+    end
+    octavesCollection[i] = octaves
+  end
+  
+  return fundamentalsCollection, octavesCollection
+end
+
+
 harmonicUtils = {
 harmonicsToMIDIPitches = harmonicsToMIDIPitches,
 newHarmonicsFromPattern = newHarmonicsFromPattern,
 newHarmonicsCollection = newHarmonicsCollection,
 notesCollectionFromHarmonicsCollection = notesCollectionFromHarmonicsCollection,
-multipleNewMIDIsFromNotesCollection = multipleNewMIDIsFromNotesCollection
+multipleNewMIDIsFromNotesCollection = multipleNewMIDIsFromNotesCollection,
+allSimplePermutedFundamentals = allSimplePermutedFundamentals
 }
