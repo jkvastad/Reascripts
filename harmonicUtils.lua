@@ -72,7 +72,6 @@ local function notesCollectionFromHarmonicsCollection(notes,harmonicsCollection)
       end
       newNotes[i] = newNote
     end
-    reaper.ShowConsoleMsg(harmonics .. "\n") 
     local newMIDIPitches = harmonicsToMIDIPitches(harmonics)
     noteUtils.updateMIDIPitches(newMIDIPitches,newNotes)
     table.insert(notesCollection,newNotes)    
