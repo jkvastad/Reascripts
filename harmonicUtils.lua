@@ -8,10 +8,10 @@ loadfile(libPath.."noteUtils.lua")()
 -- 9th harmonic is the highest allowed
 local function harmonicsToMIDIPitches(harmonics)
   local harmonicsPattern = [[^(%u?#?)(%d)]]
-  currentFundamental = "Z"
-  currentOctave = 0
-  newMIDIPitches = {}
-  i = 0
+  local currentFundamental = "Z"
+  local currentOctave = 0
+  local newMIDIPitches = {}
+  local i = 0
   while true do
     i,j,note,number = string.find(harmonics,harmonicsPattern, i+1)
     if i == nil then break end
@@ -95,15 +95,17 @@ end
 -- local fundamentalsCollection, octavesCollection = harmonicUtils.allSimplePermutedFundamentals({"C","X","C"}, 3)
 -- returns collections of the type {"C","C","C"}, {3,3,3}, {"C","C#","C"}, {3,3,3}, etc.
 local function allSimplePermutedFundamentals(fundamentals, octave)    
-  local index = 0
+  indexes = {}
   for k,v in pairs(fundamentals) do
-    if v == "X" then index = k break end
+    if v == "X" then table.insert(indexes,k) end
   end
   
   local fundamentalsCollection = {}
   for _, fundamental in pairs(noteUtils.TWELVE_TET) do
     local newFundamentals = {table.unpack(fundamentals)}
-    newFundamentals[index] = fundamental
+    for _,index in pairs(indexes) do
+      newFundamentals[index] = fundamental
+    end
     table.insert(fundamentalsCollection,newFundamentals)
   end    
   
