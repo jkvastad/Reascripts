@@ -80,13 +80,13 @@ local function notesCollectionFromHarmonicsCollection(notes,harmonicsCollection)
 end
 
 
-local function newMIDIsFromNotesCollection(track, position, notesCollection)
+local function newMIDIsFromNotesCollection(track, position, notesCollection, qnOffset)
   local currentPosition = position
   local newMIDIs = {}
   for _, notes in pairs(notesCollection) do
     local newMIDI = noteUtils.newMIDIFromNotes(track, currentPosition, notes)
     table.insert(newMIDIs,newMIDI)
-    currentPosition = currentPosition + reaper.GetMediaItemInfo_Value(newMIDI, "D_LENGTH")
+    currentPosition = currentPosition + reaper.GetMediaItemInfo_Value(newMIDI, "D_LENGTH") + reaper.TimeMap_QNToTime(qnOffset)
   end
   return newMIDIs
 end
