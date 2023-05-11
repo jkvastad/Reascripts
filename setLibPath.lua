@@ -11,7 +11,7 @@ reaper.SetExtState("Testing", "luaLibPath", libPath, true)
 reaper.ShowMessageBox("The section "..section.." has set the key "..key.." to "..libPath, "Reaper Info", 0)
 
 --[[
--- Run setLibPath in the folder you wish to use as a library folder
+-- Run setLibPath in the folder you wish to use as a library folder. (Run it by going into reaper, choose Actions -> Show action list... -> New Action... -> Load ReaScript -> navigate to this .lua file, wherever it may be)
 -- After running the above, use it in your lua files with e.g.
 local libPath = reaper.GetExtState("Testing","luaLibPath")
 package.path = package.path..";"..libPath
