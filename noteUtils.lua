@@ -69,10 +69,12 @@ local TWELVE_TET = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"} -- sta
 local NOTE_AS_MIDI = {}
 for i,note in pairs(TWELVE_TET) do
   NOTE_AS_MIDI[note] = i+11 -- C0 is MIDI value 12
+  reaper.ShowConsoleMsg(note.." "..NOTE_AS_MIDI[note].." ")
 end
 local HARMONIC_AS_MIDI = {0,12,19,24,28,31,34,36,38,39} -- First 10 harmonics
 
 local function toMIDIPitch(note,octave,harmonic)
+  harmonic = harmonic or 1	  
   return NOTE_AS_MIDI[note] + octave*12 + HARMONIC_AS_MIDI[harmonic]
 end
 

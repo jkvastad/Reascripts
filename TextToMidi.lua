@@ -69,6 +69,9 @@ Add multiple notes
 Read notes from file
 Parse scientific pitch to MIDI
 --]]
+note = "C"
+octave = 4
+reaper.ShowConsoleMsg(noteUtils.toMIDIPitch(note,octave))
 
 -- 960 is a quarter note
 reaper.MIDI_InsertNote(currentTake,false,false,0,960,0,69,64,true)
