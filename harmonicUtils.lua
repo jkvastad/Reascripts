@@ -122,7 +122,7 @@ local function allSimplePermutedFundamentals(fundamentals, octave)
 end
 
 
-harmonicUtils = {
+return {
 harmonicsToMIDIPitches = harmonicsToMIDIPitches,
 newHarmonicsFromPattern = newHarmonicsFromPattern,
 newHarmonicsCollection = newHarmonicsCollection,

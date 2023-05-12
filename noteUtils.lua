@@ -1,3 +1,7 @@
+local function helloWorld()
+	reaper.ShowMessageBox("Hello World from noteUtils", "Testing correct paths", 0)
+end
+
 local function getLengthFromTakeSource(take)
   return reaper.TimeMap_QNToTime(
     reaper.GetMediaSourceLength(
@@ -98,8 +102,9 @@ local function transposeMIDIToOctave(MIDIItem, note, octave)
 end 
 
 
-noteUtils = {
+return {
 --functions
+helloWorld = helloWorld,
 notesInTake = notesInTake,
 notesInSelectedItem = notesInSelectedItem,
 newMIDIFromNotes = newMIDIFromNotes,
