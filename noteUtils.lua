@@ -69,7 +69,7 @@ local TWELVE_TET = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"} -- sta
 local NOTE_AS_MIDI = {}
 for i,note in pairs(TWELVE_TET) do
   NOTE_AS_MIDI[note] = i+11 -- C0 is MIDI value 12
-  reaper.ShowConsoleMsg(note.." "..NOTE_AS_MIDI[note].." ")
+  --reaper.ShowConsoleMsg(note.." "..NOTE_AS_MIDI[note].." ")
 end
 local HARMONIC_AS_MIDI = {0,12,19,24,28,31,34,36,38,39} -- First 10 harmonics
 
@@ -78,6 +78,25 @@ local function toMIDIPitch(note,octave,harmonic)
   return NOTE_AS_MIDI[note] + octave*12 + HARMONIC_AS_MIDI[harmonic]
 end
 
+local function stringToNotesAndOctaves(notes_with_octaves)
+-- thanks ChatGPT!
+
+	local note_pattern = "([%ab#%-]+)(%d*)" -- pattern to match note and octave	
+
+	local notes = {} -- table to store sets of notes
+
+	for set in notes_with_octaves:gmatch("[^|]+") do -- iterate over sets separated by '|'
+	  local set_notes = {} -- table to store notes in the current set
+	  for note, octave in set:gmatch(note_pattern) do -- iterate over notes and octaves in the set
+		octave = octave ~= "" and tonumber(octave) or nil -- convert octave to number, or nil if not present
+		table.insert(set_notes, {note = note, octave = octave}) -- add note and octave as a tuple to the current set
+	  end
+	  table.insert(notes, set_notes) -- add current set to the list of sets
+	end
+	
+	
+	return notes
+end
 
 local function updateMIDIPitches(newMIDIPitches,notes)
   if #newMIDIPitches ~= #notes then
@@ -111,8 +130,9 @@ notesInTake = notesInTake,
 notesInSelectedItem = notesInSelectedItem,
 newMIDIFromNotes = newMIDIFromNotes,
 getLengthFromTakeSource = getLengthFromTakeSource,
-updateMIDIPitches = updateMIDIPitches,
 toMIDIPitch = toMIDIPitch,
+stringToNotesAndOctaves = stringToNotesAndOctaves,
+updateMIDIPitches = updateMIDIPitches,
 transposeMIDIToOctave = transposeMIDIToOctave,
 --constants
 TWELVE_TET = TWELVE_TET

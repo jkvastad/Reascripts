@@ -69,13 +69,49 @@ Add multiple notes
 Read notes from file
 Parse scientific pitch to MIDI
 --]]
-note = "C"
-octave = 4
-reaper.ShowConsoleMsg(noteUtils.toMIDIPitch(note,octave))
 
--- 960 is a quarter note
-reaper.MIDI_InsertNote(currentTake,false,false,0,960,0,69,64,true)
-reaper.MIDI_InsertNote(currentTake,false,false,960,960*2,0,69,64,true)
+
+-- Thanks ChatGPT
+local user_input_ok, user_input = reaper.GetUserInputs("Enter res_step_length PPQPOS", 1, "960 is a quarter note:", "")
+local res_step_length = 960 --960 is quarter note
+
+if user_input_ok then
+  if user_input:match("^%d+$") then
+    local number = tonumber(user_input)
+    -- The user entered a valid number
+    -- Use the 'number' variable for further processing
+    res_step_length = number --960 is quarter note
+    reaper.ShowConsoleMsg("res_step_length set to: " .. number)
+  else
+    -- The user did not enter a valid number
+    reaper.ShowConsoleMsg("Invalid input. Please enter a number.")
+  end
+else
+  -- The user canceled the dialog
+  reaper.ShowConsoleMsg("Dialog canceled by the user.")
+end
+
+for k,v in pairs(lines) do
+	local notes = noteUtils.stringToNotesAndOctaves(v)
+	local note_start = 0
+	local note_end = 0
+	local note_MIDI_pitch = 60
+	local first_note = true
+	for i, set in ipairs(notes) do
+		for j, note in ipairs(set) do
+			if note.octave ~= nil then
+				if not first_note then 
+					reaper.MIDI_InsertNote(currentTake,false,false,note_start,note_end,0,note_MIDI_pitch,64,true)                    
+				end
+				first_note = false
+				note_MIDI_pitch = noteUtils.toMIDIPitch(note.note,note.octave)
+				note_start = note_end
+			end
+			note_end = note_end + res_step_length
+		end
+		reaper.MIDI_InsertNote(currentTake,false,false,note_start,note_end,0,note_MIDI_pitch,64,true)                    
+	end
+end
 reaper.MIDI_Sort(currentTake)
 
 
