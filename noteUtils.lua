@@ -66,14 +66,31 @@ end
 
 
 local TWELVE_TET = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"} -- start at C as scientific pitch notation increments octaves at C
+
+local KEYBOARD_ALPHABET = {}
+KEYBOARD_ALPHABET["C"] = 12 -- C0 is MIDI value 12
+KEYBOARD_ALPHABET["D"] = 14
+KEYBOARD_ALPHABET["E"] = 16
+KEYBOARD_ALPHABET["F"] = 17
+KEYBOARD_ALPHABET["G"] = 19
+KEYBOARD_ALPHABET["A"] = 21
+KEYBOARD_ALPHABET["B"] = 23
+
 local NOTE_AS_MIDI = {}
-for i,note in pairs(TWELVE_TET) do
-  NOTE_AS_MIDI[note] = i+11 -- C0 is MIDI value 12
-  --reaper.ShowConsoleMsg(note.." "..NOTE_AS_MIDI[note].." ")
+for key, MIDI_value in pairs(KEYBOARD_ALPHABET) do
+  NOTE_AS_MIDI[key] = MIDI_value   
 end
+for key, MIDI_value in pairs(KEYBOARD_ALPHABET) do
+  NOTE_AS_MIDI[key.."#"] = MIDI_value+1
+end
+for key, MIDI_value in pairs(KEYBOARD_ALPHABET) do
+  NOTE_AS_MIDI[key.."b"] = MIDI_value-1
+end
+
 local HARMONIC_AS_MIDI = {0,12,19,24,28,31,34,36,38,39} -- First 10 harmonics
 
 local function toMIDIPitch(note,octave,harmonic)
+  reaper.ShowConsoleMsg(note..octave.."\n")
   harmonic = harmonic or 1	  
   return NOTE_AS_MIDI[note] + octave*12 + HARMONIC_AS_MIDI[harmonic]
 end

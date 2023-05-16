@@ -50,7 +50,6 @@ end
 
 cursorPosition = reaper.GetCursorPosition()
 --reaper.ShowConsoleMsg("cursorPosition is:"..cursorPosition.."\n")
-
 newMidiItem = reaper.CreateNewMIDIItemInProj(selectedTrack,cursorPosition,cursorPosition)
 reaper.SetMediaItemLength(newMidiItem,10,true)
 currentTake = reaper.GetTake(newMidiItem,0)
@@ -111,7 +110,7 @@ for k,v in pairs(lines) do
 		end
 		reaper.MIDI_InsertNote(currentTake,false,false,note_start,note_end,0,note_MIDI_pitch,64,true)                    
 	end
+	reaper.MIDI_Sort(currentTake)
 end
-reaper.MIDI_Sort(currentTake)
 
 
