@@ -26,11 +26,16 @@ end
 
 
 reaper.ShowConsoleMsg('Converting text to MIDI:\n')
-reaper.ShowConsoleMsg(libPath)
 
+--[[
+Data format is e.g.
+E5  G5  G5  Bb5 D5  F5  A5  E5  | F5  -   -   -   C5  -   -   -   | Bb5 -   -   -   F5  -   -   -   | F5  E5  E5  D5  C5  F5  E5  A5
+C5  C5  D5  D5  D5  F5  B5  B5  | E5  F5  D5  C5  F5  G5  B5  A5  | E5  -   -   -   D5  -   -   -   | C5  -   -   -   G5  -   -   -
+for two midi files with PPQOS length given by user
+--]]
 
 -- tests the functions above, sanity check
-local file = libPath..'Data\\note data.txt'
+local file = libPath..'Data\\note data.txt' --note data file name
 reaper.ShowConsoleMsg('file "'.. file.. '" exists: '.. tostring(file_exists(file))..'\n')
 local lines = lines_from(file)
 
@@ -48,28 +53,6 @@ else
   -- reaper.ShowConsoleMsg("selectedTrack is:"..select(2,reaper.GetTrackName(selectedTrack)).."\n")
 end
 
-cursorPosition = reaper.GetCursorPosition()
---reaper.ShowConsoleMsg("cursorPosition is:"..cursorPosition.."\n")
-newMidiItem = reaper.CreateNewMIDIItemInProj(selectedTrack,cursorPosition,cursorPosition)
-reaper.SetMediaItemLength(newMidiItem,10,true)
-currentTake = reaper.GetTake(newMidiItem,0)
-
---[[
--- check note PPQPOS values
-noteStart = reaper.MIDI_GetPPQPosFromProjQN(currentTake,1)
-reaper.ShowConsoleMsg("noteStart is:"..noteStart.."\n")
-noteEnd = reaper.MIDI_GetPPQPosFromProjQN(currentTake,2)
-reaper.ShowConsoleMsg("noteEnd is:"..noteEnd.."\n")
---]]
-
---[[
-TODO:
-Add multiple notes
-Read notes from file
-Parse scientific pitch to MIDI
---]]
-
-
 -- Thanks ChatGPT
 local user_input_ok, user_input = reaper.GetUserInputs("Enter res_step_length PPQPOS", 1, "960 is a quarter note:", "")
 local res_step_length = 960 --960 is quarter note
@@ -78,7 +61,6 @@ if user_input_ok then
   if user_input:match("^%d+$") then
     local number = tonumber(user_input)
     -- The user entered a valid number
-    -- Use the 'number' variable for further processing
     res_step_length = number --960 is quarter note
     reaper.ShowConsoleMsg("res_step_length set to: " .. number)
   else
@@ -96,6 +78,10 @@ for k,v in pairs(lines) do
 	local note_end = 0
 	local note_MIDI_pitch = 60
 	local first_note = true
+	local cursorPosition = reaper.GetCursorPosition()
+	local newMidiItem = reaper.CreateNewMIDIItemInProj(selectedTrack,cursorPosition,cursorPosition)
+	reaper.SetMediaItemLength(newMidiItem,10,true)
+	local currentTake = reaper.GetTake(newMidiItem,0)
 	for i, set in ipairs(notes) do
 		for j, note in ipairs(set) do
 			if note.octave ~= nil then
